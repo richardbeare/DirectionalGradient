@@ -33,7 +33,7 @@ colorlinks,linkcolor={blue},citecolor={blue},urlcolor={blue},
 
 % The title should be descriptive enough for people to be able to find
 % the relevant document. 
-\title{Morphology with parabolic structuring elements}
+\title{Simple directional gradients}
 
 % Increment the release number whenever significant changes are made.
 % The author and/or editor can define 'significant' however they like.
@@ -134,6 +134,13 @@ filters from an earlier InsightJournal publication \cite{Beare2008e}. The filter
 \end{itemize}
 Complete usage is illustrated in {\em testDirectional.cxx}.
 
+\section{Observations}
+The examples use extremely simple masks consisting of 1 voxel that
+lead to gradients being computed parallel to lines pointing away from
+the image centre. However arbitary masks can be used that allow much
+more complex shapes to be imposed on gradients. Examples include
+skeletons of linear structures, some form of approximate segmentation
+or a template.
 \section{Source code}
 Source code is available in with this article and latest versions are
 available from via git from
