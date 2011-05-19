@@ -11,7 +11,6 @@ int main(int argc, char * argv[])
   typedef itk::Image<unsigned char, dim> MaskType;
 
   ImageType::Pointer raw = readIm<ImageType>(argv[1]);
-  MaskType::Pointer mask = readIm<MaskType>(argv[2]);
 
   typedef itk::GradientMagnitudeRecursiveGaussianImageFilter<ImageType, FloatImageType> GType;
 
@@ -19,7 +18,7 @@ int main(int argc, char * argv[])
 
   gr->SetInput(raw);
 
-  writeIm<FloatImageType>(gr->GetOutput(), argv[3]);
+  writeIm<FloatImageType>(gr->GetOutput(), argv[2]);
 
 
   return EXIT_SUCCESS;

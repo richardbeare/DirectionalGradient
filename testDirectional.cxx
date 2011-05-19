@@ -1,6 +1,7 @@
 #include "ioutils.h"
 #include "itkDirectionalGradientImageFilter.h"
 #include "itkThresholdImageFilter.h"
+#include "itkSimpleFilterWatcher.h"
 
 int main(int argc, char * argv[])
 {
@@ -20,6 +21,9 @@ int main(int argc, char * argv[])
   dg->SetInput(raw);
   dg->SetMaskImage(mask);
   dg->SetOutsideValue(1);
+
+  itk::SimpleFilterWatcher watcher(dg, "dirgrad");
+
 
   typedef itk::ThresholdImageFilter <FloatImageType>  ThreshType;
 

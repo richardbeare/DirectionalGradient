@@ -2,6 +2,7 @@
 #define __itkDirectionalGradientImageFilter_txx
 
 #include "itkDirectionalGradientImageFilter.h"
+#include "itkProgressAccumulator.h"
 namespace itk
 {
 template<class TInputImage, class TMaskImage, class TOutputImage>
@@ -24,6 +25,9 @@ DirectionalGradientImageFilter<TInputImage, TMaskImage, TOutputImage>
 ::GenerateData()
 {
 
+  ProgressAccumulator::Pointer progress = ProgressAccumulator::New();
+  progress->SetMiniPipelineFilter(this);
+
   typename InputImageType::ConstPointer input  = this->GetInput();
   typename MaskImageType::ConstPointer mask = this->GetMaskImage();
 
@@ -38,6 +42,11 @@ DirectionalGradientImageFilter<TInputImage, TMaskImage, TOutputImage>
   m_Innerprod->SetInput(m_GradDT->GetOutput());
   m_Innerprod->SetInput2(m_RawGrad->GetOutput());
   m_Innerprod->SetScale(m_Scale);
+
+  progress->RegisterInternalFilter(m_DT, 0.2f);
+  progress->RegisterInternalFilter(m_GradDT, 0.2f);
+  progress->RegisterInternalFilter(m_RawGrad, 0.4f);
+  progress->RegisterInternalFilter(m_Innerprod, 0.2f);
   
   m_Innerprod->GraftOutput(this->GetOutput());
   m_Innerprod->Update();

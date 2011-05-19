@@ -3,6 +3,7 @@ PROJECT(DirectionalGradient)
 
 # set the name of the input image used to run the test
 SET(INPUT_IMAGE ${CMAKE_CURRENT_SOURCE_DIR}/images/cthead1.png)
+SET(INPUT_MASK ${CMAKE_CURRENT_SOURCE_DIR}/images/middle_big.png)
 
 #include some macros from another file...
 INCLUDE(IJMacros.txt)
@@ -86,8 +87,30 @@ ENDIF(BUILD_TESTING)
 #any tests you can comment out or delete the following line.
 # ADD_TEST(Testname ExecutableToRun arg1 arg2 arg3)
 
-ADD_TEST(Test ${TEST_COMMAND}
-   testDirectional ${INPUT_IMAGE} out.png
-   --compare out.png ${CMAKE_CURRENT_SOURCE_DIR}/images/test.png
+ADD_TEST(testDirectional ${TEST_COMMAND}
+   testDirectional ${INPUT_IMAGE} ${INPUT_MASK} dark_to_light.nii.gz light_to_dark.nii.gz
+   --compare dark_to_light.nii.gz ${CMAKE_CURRENT_SOURCE_DIR}/images/dark_to_light.nii.gz
+   --compare light_to_dark.nii.gz ${CMAKE_CURRENT_SOURCE_DIR}/images/light_to_dark.nii.gz
+)
+
+ADD_TEST(testStandard ${TEST_COMMAND}
+   testStandard ${INPUT_IMAGE} grad.nii.gz
+#   --compare out.png ${CMAKE_CURRENT_SOURCE_DIR}/images/test.png
+)
+
+ADD_TEST(OV1 ${TEST_COMMAND}
+   label_overlay ${INPUT_IMAGE} ${INPUT_MASK} 0.5 1 source_and_mask_ov.png
+)
+
+ADD_TEST(OV2 ${TEST_COMMAND}
+   label_overlay ${INPUT_IMAGE} dark_to_light.nii.gz 5 1 dark_to_light_ov.png
+)
+
+ADD_TEST(OV3 ${TEST_COMMAND}
+   label_overlay ${INPUT_IMAGE} light_to_dark.nii.gz 5 1 light_to_dark_ov.png
+)
+
+ADD_TEST(OV4 ${TEST_COMMAND}
+   label_overlay ${INPUT_IMAGE} grad.nii.gz 5 1 grad_ov.png
 )
 
