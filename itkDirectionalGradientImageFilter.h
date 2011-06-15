@@ -94,6 +94,14 @@ public:
   itkSetMacro(Scale, double);
   itkGetConstReferenceMacro(Scale, double);
 
+  /**
+* Set whether to use padding when computing the distance
+* transform. Default off.
+**/
+  itkSetMacro(Pad, bool);
+  itkGetConstReferenceMacro(Pad, bool);
+  itkBooleanMacro(Pad);
+
 protected:
   DirectionalGradientImageFilter();
   ~DirectionalGradientImageFilter() {};
@@ -107,17 +115,21 @@ private:
   typedef typename itk::Image<itk::CovariantVector<float, TInputImage::ImageDimension>, TInputImage::ImageDimension  > GradImType;
   typedef typename itk::GradientRecursiveGaussianImageFilter<InputImageType , GradImType >  GaussGradFiltType;
   typedef typename itk::CovariantInnerProductImageFilter< GradImType, GradImType, OutputImageType  > InnerProductType;
+  typedef typename itk::ConstantPadImageFilter<MaskImageType, MaskImageType> PadType;
+
+  typedef typename itk::CropImageFilter<FImType, FImType> CropType;
 
   typedef typename itk::MorphologicalDistanceTransformImageFilter<MaskImageType, FImType > DistTransType;
   // don't need a fancy gradient for the distance transform
   typedef typename itk::GradientImageFilter<FImType> GradFiltType;
 
-
+  typename CropType::Pointer m_Cropper;
+  typename PadType::Pointer m_Padder;
   typename DistTransType::Pointer m_DT;
   typename GradFiltType::Pointer m_GradDT;
   typename InnerProductType::Pointer m_Innerprod;
   typename GaussGradFiltType::Pointer m_RawGrad;
-
+  bool m_Pad;
 
 };
 
