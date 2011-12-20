@@ -49,6 +49,7 @@ DirectionalGradientImageFilter<TInputImage, TMaskImage, TOutputImage>
       m_Padder->SetInput( mask );
 
       m_DT->SetInput(m_Padder->GetOutput());
+      m_DT->SetOutsideValue(m_OutsideValue);
 
       m_Cropper->SetInput( m_DT->GetOutput() );
       m_Cropper->SetUpperBoundaryCropSize( Pad );
