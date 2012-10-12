@@ -4,6 +4,7 @@
 #include <itkCovariantVector.h>
 #include <itkGradientRecursiveGaussianImageFilter.h>
 #include "itkCovariantInnerProductImageFilter.h"
+#include "itkCovariantThresholdInnerProductImageFilter.h"
 #include <itkGradientImageFilter.h>
 #include "itkMorphologicalDistanceTransformImageFilter.h"
 
@@ -94,6 +95,10 @@ public:
   itkSetMacro(Scale, double);
   itkGetConstReferenceMacro(Scale, double);
 
+
+  itkSetMacro(AngleThreshold, double);
+  itkGetConstReferenceMacro(AngleThreshold, double);
+
   /**
 * Set whether to use padding when computing the distance
 * transform. Default off.
@@ -101,6 +106,13 @@ public:
   itkSetMacro(Pad, bool);
   itkGetConstReferenceMacro(Pad, bool);
   itkBooleanMacro(Pad);
+
+  /**
+* Set whether to apply an angle threshold. Default off.
+**/
+  itkSetMacro(ApplyAngleThreshold, bool);
+  itkGetConstReferenceMacro(ApplyAngleThreshold, bool);
+  itkBooleanMacro(ApplyAngleThreshold);
 
 protected:
   DirectionalGradientImageFilter();
@@ -115,6 +127,7 @@ private:
   typedef typename itk::Image<itk::CovariantVector<float, TInputImage::ImageDimension>, TInputImage::ImageDimension  > GradImType;
   typedef typename itk::GradientRecursiveGaussianImageFilter<InputImageType , GradImType >  GaussGradFiltType;
   typedef typename itk::CovariantInnerProductImageFilter< GradImType, GradImType, OutputImageType  > InnerProductType;
+  typedef typename itk::CovariantThresholdInnerProductImageFilter< GradImType, GradImType, OutputImageType  > ThresholdInnerProductType;
   typedef typename itk::ConstantPadImageFilter<MaskImageType, MaskImageType> PadType;
 
   typedef typename itk::CropImageFilter<FImType, FImType> CropType;
@@ -128,9 +141,11 @@ private:
   typename DistTransType::Pointer m_DT;
   typename GradFiltType::Pointer m_GradDT;
   typename InnerProductType::Pointer m_Innerprod;
+  typename ThresholdInnerProductType::Pointer m_ThreshInnerprod;
   typename GaussGradFiltType::Pointer m_RawGrad;
   bool m_Pad;
-
+  bool m_ApplyAngleThreshold;
+  double m_AngleThreshold;
 };
 
 } // end namespace itk

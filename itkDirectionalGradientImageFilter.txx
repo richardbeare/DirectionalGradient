@@ -15,6 +15,7 @@ DirectionalGradientImageFilter<TInputImage, TMaskImage, TOutputImage>
   m_DT = DistTransType::New();
   m_GradDT = GradFiltType::New();
   m_Innerprod = InnerProductType::New();
+  m_ThreshInnerprod = ThresholdInnerProductType::New();
   m_RawGrad = GaussGradFiltType::New();
   m_Padder = PadType::New();
   m_Cropper = CropType::New();
@@ -23,6 +24,10 @@ DirectionalGradientImageFilter<TInputImage, TMaskImage, TOutputImage>
   m_Scale=1.0;
   m_OutsideValue = 0;
   m_Pad = false;
+
+  m_ApplyAngleThreshold = false;
+  m_AngleThreshold = M_PI;
+
 }
 
 
@@ -68,18 +73,38 @@ DirectionalGradientImageFilter<TInputImage, TMaskImage, TOutputImage>
   m_RawGrad->SetInput(input);
   m_RawGrad->SetSigma(m_Sigma);
 
-  m_Innerprod->SetInput(m_GradDT->GetOutput());
-  m_Innerprod->SetInput2(m_RawGrad->GetOutput());
-  m_Innerprod->SetScale(m_Scale);
+  if (m_ApplyAngleThreshold)
+    {
+    m_ThreshInnerprod->SetInput(m_GradDT->GetOutput());
+    m_ThreshInnerprod->SetInput2(m_RawGrad->GetOutput());
+    m_ThreshInnerprod->SetScale(m_Scale);
+    m_ThreshInnerprod->SetAngleThresh(m_AngleThreshold);
+    
+    progress->RegisterInternalFilter(m_DT, 0.2f);
+    progress->RegisterInternalFilter(m_GradDT, 0.2f);
+    progress->RegisterInternalFilter(m_RawGrad, 0.4f);
+    progress->RegisterInternalFilter(m_Innerprod, 0.2f);
+    
+    m_ThreshInnerprod->GraftOutput(this->GetOutput());
+    m_ThreshInnerprod->Update();
+    this->GraftOutput(m_ThreshInnerprod->GetOutput());
 
-  progress->RegisterInternalFilter(m_DT, 0.2f);
-  progress->RegisterInternalFilter(m_GradDT, 0.2f);
-  progress->RegisterInternalFilter(m_RawGrad, 0.4f);
-  progress->RegisterInternalFilter(m_Innerprod, 0.2f);
-  
-  m_Innerprod->GraftOutput(this->GetOutput());
-  m_Innerprod->Update();
-  this->GraftOutput(m_Innerprod->GetOutput());
+    }
+  else
+    {
+    m_Innerprod->SetInput(m_GradDT->GetOutput());
+    m_Innerprod->SetInput2(m_RawGrad->GetOutput());
+    m_Innerprod->SetScale(m_Scale);
+    
+    progress->RegisterInternalFilter(m_DT, 0.2f);
+    progress->RegisterInternalFilter(m_GradDT, 0.2f);
+    progress->RegisterInternalFilter(m_RawGrad, 0.4f);
+    progress->RegisterInternalFilter(m_Innerprod, 0.2f);
+    
+    m_Innerprod->GraftOutput(this->GetOutput());
+    m_Innerprod->Update();
+    this->GraftOutput(m_Innerprod->GetOutput());
+    }
 }
 
 
