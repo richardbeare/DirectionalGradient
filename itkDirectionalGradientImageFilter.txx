@@ -8,8 +8,8 @@
 
 namespace itk
 {
-template<class TInputImage, class TMaskImage, class TOutputImage>
-DirectionalGradientImageFilter<TInputImage, TMaskImage, TOutputImage>
+template<class TInputImage, class TMaskImage, class TOutputImage, class TDTImage>
+DirectionalGradientImageFilter<TInputImage, TMaskImage, TOutputImage, TDTImage>
 ::DirectionalGradientImageFilter()
 {
   m_DT = DistTransType::New();
@@ -31,9 +31,9 @@ DirectionalGradientImageFilter<TInputImage, TMaskImage, TOutputImage>
 }
 
 
-template<class TInputImage, class TMaskImage, class TOutputImage>
+template<class TInputImage, class TMaskImage, class TOutputImage, class TDTImage>
 void
-DirectionalGradientImageFilter<TInputImage, TMaskImage, TOutputImage>
+DirectionalGradientImageFilter<TInputImage, TMaskImage, TOutputImage, TDTImage>
 ::GenerateData()
 {
 
@@ -42,7 +42,7 @@ DirectionalGradientImageFilter<TInputImage, TMaskImage, TOutputImage>
 
   typename InputImageType::ConstPointer input  = this->GetInput();
   typename MaskImageType::ConstPointer mask = this->GetMaskImage();
-
+  typename DTImageType::ConstPointer dt = this->GetDTImage();
   // construct mini pipeline
   if (m_Pad)
     {
@@ -65,9 +65,16 @@ DirectionalGradientImageFilter<TInputImage, TMaskImage, TOutputImage>
     }
   else
     {
-    m_DT->SetInput(mask);
-    m_DT->SetOutsideValue(m_OutsideValue);
-    m_GradDT->SetInput(m_DT->GetOutput());
+    if (dt)
+      {
+      m_GradDT->SetInput(dt);
+      }
+    else
+      {
+      m_DT->SetInput(mask);
+      m_DT->SetOutsideValue(m_OutsideValue);
+      m_GradDT->SetInput(m_DT->GetOutput());
+      }
     }
 
   m_RawGrad->SetInput(input);

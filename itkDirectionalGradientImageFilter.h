@@ -39,7 +39,7 @@ namespace itk {
 */
 
 
-template<class TInputImage, class TMaskImage, class TOutputImage>
+template<class TInputImage, class TMaskImage, class TOutputImage, class TDTImage=itk::Image<float, TInputImage::ImageDimension > >
 class ITK_EXPORT DirectionalGradientImageFilter :
     public ImageToImageFilter<TInputImage, TOutputImage>
 {
@@ -53,6 +53,7 @@ public:
   typedef TInputImage  InputImageType;
   typedef TMaskImage   MaskImageType;
   typedef TOutputImage OutputImageType;
+  typedef TDTImage DTImageType;
   typedef typename InputImageType::PixelType InputPixelType;
 
   /** Method for creation through the object factory. */
@@ -69,6 +70,17 @@ public:
   MaskImageType * GetMaskImage()
   {
     return static_cast<MaskImageType*>(const_cast<DataObject *>(this->ProcessObject::GetInput(1)));
+
+  }
+
+  void SetDTImage(TDTImage *input)
+  {
+    // Process object is not const-correct so the const casting is required.
+    this->SetNthInput( 2, const_cast<TDTImage *>(input) );
+  }
+  DTImageType * GetDTImage()
+  {
+    return static_cast<DTImageType*>(const_cast<DataObject *>(this->ProcessObject::GetInput(2)));
 
   }
 
@@ -123,7 +135,9 @@ private:
   double m_Sigma;
   double m_Scale;
   InputPixelType m_OutsideValue;
-  typedef typename itk::Image<float, TInputImage::ImageDimension> FImType;
+  //typedef typename itk::Image<float, TInputImage::ImageDimension>
+  //FImType;
+  typedef TDTImage FImType;
   typedef typename itk::Image<itk::CovariantVector<float, TInputImage::ImageDimension>, TInputImage::ImageDimension  > GradImType;
   typedef typename itk::GradientRecursiveGaussianImageFilter<InputImageType , GradImType >  GaussGradFiltType;
   typedef typename itk::CovariantInnerProductImageFilter< GradImType, GradImType, OutputImageType  > InnerProductType;
