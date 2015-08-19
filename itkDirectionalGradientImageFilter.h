@@ -6,6 +6,7 @@
 #include "itkCovariantInnerProductImageFilter.h"
 #include "itkCovariantThresholdInnerProductImageFilter.h"
 #include <itkGradientImageFilter.h>
+#include <itkCropImageFilter.h>
 #include "itkMorphologicalDistanceTransformImageFilter.h"
 
 namespace itk {
